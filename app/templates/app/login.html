@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Male_Fashion Template">
+    <meta name="keywords" content="Male_Fashion, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>AURORA</title>
+    <link rel="stylesheet" href="https://toert.github.io/Isolated-Bootstrap/versions/4.0.0-beta/iso_bootstrap4.0.0min.css">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" type="text/css">
+
+</head>
+
+<body>
+
+   <div style="position:absolute;z-index: 10; background-color:rgba(255,255,255,0)" id="message" class="bootstrap container">
+        {% if messages %}
+                {% for message in messages %}
+                <div align="center" class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+        {% endif %}
+        </div>
+
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form method="POST" action="{% url 'register' %}">
+                {% csrf_token %}
+                <h1>Create Account</h1>
+                <span>or use your email for registration</span>
+                <input name="username" type="text" placeholder="Username" />
+                <input name="email" type="email" placeholder="Email" />
+                <input name="password1" type="password" placeholder="Password" />
+                <input name="password2" type="password" placeholder="Confirm" />
+                <button>Sign Up</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <h1>Sign in</h1>
+                <span>or use your account</span>
+                <input name="username" type="text" placeholder="Username" />
+                <input name="password" type="password" placeholder="Password" />
+                <a href="#">Forgot your password?</a>
+                <button>Sign In</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>AURORA</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+		var message_ele = document.getElementById("message");
+		setTimeout(function(){ 
+	   message_ele.style.display = "none"; 
+	}, 3000);
+	
+</script>
+<script src="{% static 'js/login.js' %}"></script>
+</body>
+
+</html>

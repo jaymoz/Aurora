@@ -1,0 +1,138 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block content %}
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__text">
+                        <h4>Check Out</h4>
+                        <div class="breadcrumb__links">
+                            <a href="{% url 'home' %}">Home</a>
+                            <a href="{% url 'store' %}">Store</a>
+                            <span>Check Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="checkout__form">
+                <form method="POST" action="#">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6">
+                            <h6 class="coupon__code"><span class="icon_tag_alt"></span> Have a coupon? <a href="{% url 'cart' %}">Click
+                            here</a> to enter your code</h6>
+                            <h6 class="checkout__title">Billing Details</h6>
+                            {% if default_delivery_address %}
+                            <div class="checkout__input__checkbox">
+                                <label for="none">
+                                    Use default address
+                                    <input name="use_default_delivery" type="checkbox" id="none">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Full Name<span>*</span></p>
+                                        <input name="full_name" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>City<span>*</span></p>
+                                        <input name="city" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>House Address<span>*</span></p>
+                                        <input name="house_address" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Country<span>*</span></p>
+                                        <input name="country" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Postal Code / Zip<span>*</span></p>
+                                        <input name="postal_code" type="text">
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="checkout__input">
+                                        <p>Phone<span>*</span></p>
+                                        <input name="phone" type="text">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="checkout__input__checkbox">
+                                <label for="diff-acc">
+                                   Set as default address
+                                    <input name="set_default_delivery" type="checkbox" id="diff-acc">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <div class="checkout__input">
+                                <p>Order notes<span>*</span></p>
+                                <input name="order_notes" type="text"
+                                placeholder="Notes about your order, e.g. special notes for delivery.">
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="checkout__order">
+                                <h4 class="order__title">Your order</h4>
+                                <div class="checkout__order__products">Product(s) <span>Total</span></div>
+                                {% for it in order.items.all %}
+                                <ul class="checkout__total__products">
+                                    {% if it.item.discount_price %}
+                                    <li>{{it.item.name}} <span>$ {{it.get_total_discount_item_price}}</span></li>
+                                    {% else %}
+                                    <li>{{it.item.name}} <span>$ {{it.get_total_item_price}}</span></li>
+                                    {% endif %}
+                                </ul>
+                                {% endfor %}
+                                <ul class="checkout__total__all">
+                                    <li>Total <span>${{order.get_total}}</span></li>
+                                </ul>
+                                <!-- <div class="checkout__input__checkbox">
+                                    <label for="payment">
+                                        Check Payment
+                                        <input type="checkbox" id="payment">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <div class="checkout__input__checkbox">
+                                    <label for="paypal">
+                                        Paypal
+                                        <input type="checkbox" id="paypal">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div> -->
+                                <button type="submit" class="site-btn">PLACE ORDER</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+   
