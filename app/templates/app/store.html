@@ -25,13 +25,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
-                    <div class="shop__sidebar">
-                        <div class="shop__sidebar__search">
-                            <form action="#">
-                                <input type="text" placeholder="Search...">
-                                <button type="submit"><span class="icon_search"></span></button>
-                            </form>
-                        </div>
+                    <form method="POST" class="shop__sidebar">
+                        {% csrf_token %}
                         <div class="shop__sidebar__accordion">
                             <div class="accordion" id="accordionExample">
                                 <div class="card">
@@ -43,14 +38,22 @@
                                             <div class="shop__sidebar__categories">
                                                 <ul class="nice-scroll">
                                                     {% for category in categories %}
-                                                    {% with num_items=category.item_set.all|length %}
-                                                    <li><a href="#">{{category.name}} ({{ num_items }})</a></li>
-                                                    {% endwith %}
+                                                        {% with num_items=category.item_set.all|length %}
+                                                            <li>
+                                                                <div class="checkout__input__checkbox">
+                                                                    <label for="{{ category.name }}">
+                                                                        {{ category.name }} ({{ num_items }})
+                                                                        <input name="category_name" type="checkbox" id="{{ category.name }}" value="{{ category.name }}">
+                                                                        <span class="checkmark"></span>
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        {% endwith %}
                                                     {% endfor %}
                                                 </ul>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>                                    
                                 </div>
                                 <div class="card">
                                     <div class="card-heading">
@@ -61,7 +64,15 @@
                                             <div class="shop__sidebar__brand">
                                                 <ul>
                                                     {% for brand in brands %}
-                                                    <li><a href="#">{{brand.name}}</a></li>
+                                                    <li>
+                                                        <div class="checkout__input__checkbox">
+                                                            <label for="{{brand.name}}">
+                                                                {{brand.name}}
+                                                                <input name="brand_name" type="checkbox" id="{{brand.name}}" value="{{brand.name}}">
+                                                                <span class="checkmark"></span>
+                                                            </label>
+                                                        </div>
+                                                    </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -75,69 +86,70 @@
                                     <div id="collapseThree" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
                                             <div class="shop__sidebar__price">
+                                                <label for="min-price-range">Minimum Price:</label>
+                                                <input type="range" id="min-price-range" name="min-price" min="0" max="100000" step="1" oninput="updateMinPriceRange()">
+                                                <output for="min-price-range" id="min-price-output">$0.00</output>
+                                                <br>
+                                                <label for="max-price-range">Maximum Price:</label>
+                                                <input type="range" id="max-price-range" name="max-price" min="0" max="100000" step="1" oninput="updateMaxPriceRange()">
+                                                <output for="max-price-range" id="max-price-output">$100000.00</output>
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                                <div class="card">
+                                    <div class="card-heading">
+                                        <a data-toggle="collapse" data-target="#collapseTwo">Size</a>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <div class="shop__sidebar__brand">
                                                 <ul>
-                                                    <li><a href="#">$0.00 - $50.00</a></li>
-                                                    <li><a href="#">$50.00 - $100.00</a></li>
-                                                    <li><a href="#">$100.00 - $150.00</a></li>
-                                                    <li><a href="#">$150.00 - $200.00</a></li>
-                                                    <li><a href="#">$200.00 - $250.00</a></li>
-                                                    <li><a href="#">250.00+</a></li>
+                                                    {% for size in sizes %}
+                                                    <li>
+                                                        <div class="checkout__input__checkbox">
+                                                            <label for="{{size.size}}">
+                                                                {{size.size}}
+                                                                <input name="size_name" type="checkbox" id="{{size.size}}" value="{{size.size}}">
+                                                                <span class="checkmark"></span>
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="card">
                                     <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseFour">Size</a>
+                                        <a data-toggle="collapse" data-target="#collapseTwo">Color</a>
                                     </div>
-                                    <div id="collapseFour" class="collapse show" data-parent="#accordionExample">
+                                    <div id="collapseTwo" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
-                                            <div class="shop__sidebar__size">
-                                                {% for size in sizes %}
-                                                <label for="{{size.size}}">{{size.size}}
-                                                    <input type="radio" id="{{size.size}}">
-                                                </label>
-                                                {% endfor %}
+                                            <div class="shop__sidebar__brand">
+                                                <ul>
+                                                    {% for color in colors %}
+                                                    <li>
+                                                        <div class="checkout__input__checkbox">
+                                                            <label for="{{color.color}}">
+                                                                {{color.color}}
+                                                                <input name="color_name" type="checkbox" id="{{color.color}}" value="{{color.color}}">
+                                                                <span class="checkmark"></span>
+                                                            </label>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card">
-                                    <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseFive">Colors</a>
-                                    </div>
-                                    <div id="collapseFive" class="collapse show" data-parent="#accordionExample">
-                                        <div class="card-body">
-                                            <div class="shop__sidebar__tags">
-                                                {% for color in colors %}
-                                                <span >{{color.color}}</span>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card">
-                                    <div class="card-heading">
-                                        <a data-toggle="collapse" data-target="#collapseSix">Tags</a>
-                                    </div>
-                                    <div id="collapseSix" class="collapse show" data-parent="#accordionExample">
-                                        <div class="card-body">
-                                            <div class="shop__sidebar__tags">
-                                                <a href="#">Product</a>
-                                                <a href="#">Bags</a>
-                                                <a href="#">Shoes</a>
-                                                <a href="#">Fashio</a>
-                                                <a href="#">Clothing</a>
-                                                <a href="#">Hats</a>
-                                                <a href="#">Accessories</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <button class="btn btn-primary" type="submit">filter</button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="col-lg-9">
                     <div class="shop__product__option">
@@ -145,16 +157,6 @@
                             <div class="col-lg-6 col-md-6 col-sm-6">
                                 <div class="shop__product__option__left">
                                     <p>Showing 1–12 of 126 results</p>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-6">
-                                <div class="shop__product__option__right">
-                                    <p>Sort by Price:</p>
-                                    <select>
-                                        <option value="">Low To High</option>
-                                        <option value="">$0 - $55</option>
-                                        <option value="">$55 - $100</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -230,4 +232,33 @@
     </section>
     <!-- Shop Section End -->
 
+    <script>
+        window.onload = function() {
+            // Set the minimum price slider to a default value of 0
+            document.getElementById("min-price-range").value = 0;
+            updateMinPriceRange(); // Update the output value and input field
+            
+            // Set the maximum price slider to a default value of 100000
+            document.getElementById("max-price-range").value = document.getElementById("max-price-range").max;
+            updateMaxPriceRange(); // Update the output value and input field
+        }
+    
+        function updateMinPriceRange() {
+            var slider = document.getElementById("min-price-range");
+            var output = document.getElementById("min-price-output");
+            output.innerHTML = "$" + slider.value + ".00";
+    
+            // Set the value of the input field
+            document.getElementById("min-price-input").value = slider.value;
+        }
+    
+        function updateMaxPriceRange() {
+            var slider = document.getElementById("max-price-range");
+            var output = document.getElementById("max-price-output");
+            output.innerHTML = "$" + slider.value + ".00";
+    
+            // Set the value of the input field
+            document.getElementById("max-price-input").value = slider.value;
+        }
+    </script>
 {% endblock %}

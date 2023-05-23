@@ -38,6 +38,7 @@ class OrderItemAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = [ 'user',
+                    'id',
                     'ordered',
                     'status',
                     'house_address',
@@ -48,8 +49,11 @@ class OrderAdmin(admin.ModelAdmin):
  
     ]
 
+    list_editable = ['status']
+
     list_display_links = [
                 'user',
+                'id',
 
     ]
 
@@ -65,7 +69,6 @@ class OrderAdmin(admin.ModelAdmin):
             'user__username',
             'ref_code'
     ]
-
     actions = [make_refund_accepted, order_completed]
 
 admin.site.index_title = "AURORA"

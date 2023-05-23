@@ -1,0 +1,130 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block content %}
+<script src="https://www.paypal.com/sdk/js?client-id=ASxQbYpqGT7jEXY7n3Y_1qpKnwpRVvrF0N5gdNya9d8zIibKR9SFiZhz263SfN7fxsjnu2pROC4Vlr4m&currency=USD&disable-funding=paylater"></script>
+
+    <!-- Checkout Section Begin -->
+    <section class="checkout spad">
+        <div class="container">
+            <div class="checkout__form">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="checkout__order">
+                                <h4 class="order__title">Your order</h4>
+                                <div class="checkout__order__products">Product(s) <span>Total</span></div>
+                                {% for it in order.items.all %}
+                                <ul class="checkout__total__products">
+                                    {% if it.item.discount_price %}
+                                    <li>{{it.item.name}} <span>$ {{it.get_total_discount_item_price}}</span></li>
+                                    {% else %}
+                                    <li>{{it.item.name}} <span>$ {{it.get_total_item_price}}</span></li>
+                                    {% endif %}
+                                </ul>
+                                {% endfor %}
+                                <ul class="checkout__total__all">
+                                    <li>Total <span>${{order.get_total}}</span></li>
+                                </ul>
+                                <div align="center" id="paypal-button-container"></div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+        var total = '{{order.get_total}}'
+        var orderId = '{{order.id}}'
+
+        function completeOrder(){
+            var url = "{% url 'payment-completed' %}";
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'X-CSRFToken' : csrftoken,
+                },
+                body: JSON.stringify({'orderId':orderId})
+            }).then(function() {
+                // Redirect to the URL specified by the 'url' variable after the fetch request is complete
+                location.href = url;
+            });
+        }
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+            style: {
+                color: 'blue',
+                shape: 'rect',
+                label: 'pay',
+                height: 40
+
+            },
+            // Call your server to set up the transaction
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: total
+                        }
+                    }]
+                });
+            },
+
+            // Call your server to finalize the transaction
+            onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details){
+                var url = "{% url 'payment-completed' %}";
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'X-CSRFToken' : csrftoken,
+                    },
+                    body: JSON.stringify({
+                        'orderId':orderId,
+                        'status' : details.status
+                    })
+                }).then(function(response) {
+                    // Check if the payment was completed successfully
+                    if (details.status.toLowerCase() === "completed") {
+                        // Redirect to the payment completed page
+                        window.location.href = "{% url 'payment-successful' %}";
+                    } else {
+                        // Redirect to the payment not complete page
+                        window.location.href = "{% url 'payment-failed' %}";
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                });
+
+            })
+        }
+
+            }).render('#paypal-button-container');
+
+    </script>
+{% endblock %}
+   

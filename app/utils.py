@@ -9,6 +9,7 @@ import random,string
 import operator
 from collections import Counter
 from django.db.models import Count, Sum, DecimalField
+from datetime import timedelta
 
 def create_ref_code():
 	return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
@@ -21,7 +22,13 @@ def is_valid_form(values):
 	return valid
 
 def get_popular_items():
-    popular_items = OrderItem.objects.filter(ordered=True)[:6]
+    last_24_hours = timezone.now() - timedelta(hours=24)
+
+
+    popular_items = OrderItem.objects.filter(
+        ordered=True,
+        order__ordered_date__gte=last_24_hours)[:6]
+
     items = [item.item for item in popular_items]
     item_counts = Counter(items)
     result = []
@@ -29,6 +36,7 @@ def get_popular_items():
         images = ItemImage.objects.filter(item=item)
         image_url = images.first().imageURL if images.exists() else None
         temp = {
+            'id': item.id,
             'name': item.name,
             'image': image_url,
             'quantity_sold': count,
@@ -67,3 +75,9 @@ def checkEmail(text):
 	if(re.search(regex,text)):   
 		return True
 	return False 
+
+def check_user_review(user, item):
+	reviews = Review.objects.filter(user=user, item=item)
+	if reviews.exists():
+		return True
+	return False

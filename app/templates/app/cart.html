@@ -31,6 +31,7 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
+                                    <th>&nbsp;</th>
                                     <th>Quantity</th>
                                     <th>Total</th>
                                     <th></th>
@@ -47,12 +48,11 @@
                                             <h6>{{it.item.name}}</h6>
                                         </div>
                                     </td>
+                                    <td>&nbsp;</td>
                                     <td class="quantity__item">
-                                        <div class="quantity">
-                                            <div class="pro-qty-2">
-                                                <input type="text" value="1">
-                                            </div>
-                                        </div>
+                                        <a href="{% url 'remove-single-item-from-cart-page' it.item.slug %}"><i style="color: black;" class="fa fa-angle-left" aria-hidden="true"></i></a>
+                                               <span style="margin-left: 10px; margin-right: 10px;">{{ it.quantity }}</span>
+                                        <a href="{% url 'add-single-item-to-cart-page' it.item.slug %}"><i style="color: black;" class="fa fa-angle-right" aria-hidden="true"></i></a>
                                     </td>
                                     {% if it.item.discount_price %}
                                     <td class="cart__price">$ {{it.get_total_discount_item_price}}
@@ -84,13 +84,6 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-                    <div class="cart__discount">
-                        <h6>Discount codes</h6>
-                        <form action="#">
-                            <input type="text" placeholder="Coupon code">
-                            <button type="submit">Apply</button>
-                        </form>
-                    </div>
                     {% if order.get_total %}
                     <div class="cart__total">
                         <h6>Cart total</h6>

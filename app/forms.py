@@ -28,14 +28,15 @@ class RegisterUserForm(UserCreationForm):
 
 
 class CheckoutForm(forms.Form):
-	full_name = forms.CharField(required=True)
-	city = forms.CharField(required=True)
-	house_address = forms.CharField(required=True)
-	country = forms.CharField(required=True)
-	postal_code = forms.CharField(required=True)
-	phone = forms.CharField(required=True)
-	order_notes = forms.CharField(required=True)
+	full_name = forms.CharField(required=False)
+	city = forms.CharField(required=False)
+	house_address = forms.CharField(required=False)
+	country = forms.CharField(required=False)
+	postal_code = forms.CharField(required=False)
+	phone = forms.CharField(required=False)
+	order_notes = forms.CharField(required=False)
 	set_default_delivery = forms.BooleanField(required=False)
-	use_default_delivery = forms.BooleanField(required=False)
+	use_default_address = forms.BooleanField(required=False)
 
 	# phone = forms.IntegerField(required=False,validators=[RegexValidator(regex=r'^(\+?7|8)\d{10}$', message='Phone number must be entered in the format: (+7|8) 960 xxx-xx-xx ' )])
+

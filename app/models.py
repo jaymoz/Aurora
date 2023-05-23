@@ -10,6 +10,7 @@ from django.core.validators import RegexValidator
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Avg
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -20,11 +21,16 @@ class Brand(models.Model):
 	
 	def __str__(self):
 		return self.name
+	
+	class Meta:
+		db_table = 'Brand'
 
 class ItemColor(models.Model):
 	color = models.CharField(max_length=100)
 	class Meta:
+		db_table = "ItemColor"
 		verbose_name_plural = "Item Color"
+
 	
 	def __str__(self):
 		return self.color
@@ -33,6 +39,7 @@ class ItemColor(models.Model):
 class Size(models.Model):
 	size = models.CharField(max_length=5)
 	class Meta:
+		db_table = "Size"
 		verbose_name_plural = "Size"
 	
 	def __str__(self):
@@ -42,6 +49,7 @@ class Category(models.Model):
 	name = models.CharField(max_length=100)
 
 	class Meta:
+		db_table  = "Category"
 		verbose_name_plural = 'Categories'
 	
 	def __str__(self):
@@ -89,6 +97,8 @@ class Item(models.Model):
 		review_count = Review.objects.filter(item=self).count()
 		return review_count
 
+	class Meta:
+		db_table  = "Item"
 
 class OrderItem(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -113,6 +123,10 @@ class OrderItem(models.Model):
 			return self.get_total_discount_item_price()
 		else:
 			return self.get_total_item_price()
+		
+	class Meta:
+		db_table  = "OrderItem"
+
 
 class Order(models.Model):
 	STATUS_CHOICES = (
@@ -154,6 +168,9 @@ class Order(models.Model):
 		status_dict = {x[1]:x[0] for x in self.STATUS_CHOICES}
 		self.status = status_dict[val]
 
+	class Meta:
+		db_table  = "Order"
+
 
 class Contact(models.Model):
 	full_name = models.CharField(max_length=100)
@@ -162,6 +179,9 @@ class Contact(models.Model):
 	read = models.BooleanField(default=False)
 	def __str__(self):
 		return self.email
+
+	class Meta:
+		db_table  = "Contact"
 	
 
 class Address(models.Model):
@@ -175,6 +195,7 @@ class Address(models.Model):
 	default = models.BooleanField(default=False)
 
 	class Meta:
+		db_table = "Address"
 		verbose_name_plural = 'Addresses'
 
 	def __str__(self):
@@ -186,9 +207,13 @@ class Review(models.Model):
 	item = models.ForeignKey(Item, on_delete=models.CASCADE)
 	comment = models.TextField(max_length=500)
 	rating = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(5)])
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return self.item.name
+
+	class Meta:
+		db_table  = "Review"
 	
 
 class Wishlist(models.Model):
@@ -197,6 +222,9 @@ class Wishlist(models.Model):
 	
 	def __str__(self):
 		return str(self.id)
+	
+	class Meta:
+		db_table  = "Wishlist"
 	
 
 class ItemImage(models.Model):
@@ -213,6 +241,9 @@ class ItemImage(models.Model):
 	
 	def __str__(self):
 		return self.item.name
+
+	class Meta:
+		db_table  = "ItemImage"
 
 
 
