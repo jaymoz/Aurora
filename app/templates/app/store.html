@@ -1,5 +1,6 @@
 {% extends 'app/base.html' %}
 {% load static %}
+{% load filter_paginator_tags %}
 {% block content %}
 
     <!-- Breadcrumb Section Begin -->
@@ -25,8 +26,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
-                    <form method="POST" class="shop__sidebar">
-                        {% csrf_token %}
+                    <form method="GET" action="." class="shop__sidebar">
                         <div class="shop__sidebar__accordion">
                             <div class="accordion" id="accordionExample">
                                 <div class="card">
@@ -218,14 +218,33 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="product__pagination">
-                                <a class="active" href="#">1</a>
-                                <a href="#">2</a>
-                                <a href="#">3</a>
-                                <span>...</span>
-                                <a href="#">21</a>
+                                {% if items.has_previous %}
+                                <a href="{% my_url items.previous_page_number 'page' request.GET.urlencode %}">{{items.previous_page_number}}</a>
+                                {% endif %}
+                                <a href="{% my_url items.number 'page' request.GET.urlencode %}" class="active">{{items.number}}</a>
+                                {% if items.has_next %}
+                                <a href="{% my_url items.next_page_number 'page' request.GET.urlencode %}">{{items.next_page_number}}</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
+                
+                    {% if is_paginated %}
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="product__pagination">
+                                {% if page_obj.has_previous %}
+                                <a href="{% my_url page_obj.previous_page_number 'page' request.GET.urlencode %}">{{page_obj.previous_page_number}}</a>
+                                {% endif %}
+                                <a href="{% my_url page_obj.number 'page' request.GET.urlencode %}" class="active">{{page_obj.number}}</a>
+                                {% if page_obj.has_next %}
+                                <a href="{% my_url page_obj.next_page_number 'page' request.GET.urlencode %}">{{page_obj.next_page_number}}</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                 </div>
             </div>
         </div>

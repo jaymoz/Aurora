@@ -24,7 +24,7 @@ from django.utils.encoding import force_bytes
 from django.core.mail import send_mail, BadHeaderError
 from django.contrib.auth.forms import PasswordResetForm
 from django.template.loader import render_to_string
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 # Create your views here.
@@ -108,56 +108,69 @@ def store(request):
 	brands = Brand.objects.all()
 	colors = ItemColor.objects.all()
 	sizes = Size.objects.all()
-	paginator_qs = Paginator(items, 12)
-	page = request.GET.get('page')
-	paginated_items = paginator_qs.get_page(page)
-	context = {'items': paginated_items, 'categories': categories, 'brands': brands, 'sizes': sizes, 'colors': colors}
+	paginator = Paginator(items, 12)
+	page_request_var = 'page'
+	page = request.GET.get(page_request_var)
+	try:
+		paginated_queryset = paginator.page(page)
+	except PageNotAnInteger:
+		paginated_queryset = paginator.page(1)
+	except EmptyPage:
+		paginated_queryset = paginator.page(paginator.num_pages)
+
+	context = {
+		'items': paginated_queryset,
+		'categories': categories,
+		'brands': brands,
+		'sizes': sizes,
+		'colors': colors,
+		'page_request_var': page_request_var
+	}
 
 	if request.user.is_authenticated:
 		wishlist = Wishlist.objects.filter(user=request.user).first().items.all() if Wishlist.objects.filter(
 			user=request.user).exists() else []
 		context.update({'wishlist': wishlist})
 
-	if request.method == 'POST':
-		selected_categories = request.POST.getlist('category_name')
-		selected_brands = request.POST.getlist('brand_name')
-		selected_sizes = request.POST.getlist('size_name')
-		selected_colors = request.POST.getlist('color_name')
+	if request.method == 'GET':
+		selected_categories = request.GET.getlist('category_name')
+		selected_brands = request.GET.getlist('brand_name')
+		selected_sizes = request.GET.getlist('size_name')
+		selected_colors = request.GET.getlist('color_name')
 
-		min_price = float(request.POST.get('min-price'))
-		max_price = float(request.POST.get('max-price'))
+		if request.GET.get('min-price') and request.GET.get('max-price'):
+			min_price = float(request.GET.get('min-price'))
+			max_price = float(request.GET.get('max-price'))
+			print(min_price, " : ", max_price)
 
 		if selected_categories:
 			items = items.filter(category__name__in=selected_categories)
-			paginator_qs = Paginator(items, 12)
-			page = request.GET.get('page')
-			paginated_items = paginator_qs.get_page(page)
 
 		if selected_brands:
 			items = items.filter(brand__name__in=selected_brands)
-			paginator_qs = Paginator(items, 12)
-			page = request.GET.get('page')
-			paginated_items = paginator_qs.get_page(page)
 
 		if selected_sizes:
 			items = items.filter(size__size__in=selected_sizes)
-			paginator_qs = Paginator(items, 12)
-			page = request.GET.get('page')
-			paginated_items = paginator_qs.get_page(page)
 
 		if selected_colors:
 			items = items.filter(color__color__in=selected_colors)
-			paginator_qs = Paginator(items, 12)
-			page = request.GET.get('page')
-			paginated_items = paginator_qs.get_page(page)
 
-		items = items.filter(price__gte=min_price, price__lte=max_price)
-		paginator_qs = Paginator(items, 12)
-		page = request.GET.get('page')
-		paginated_items = paginator_qs.get_page(page)
+		if request.GET.get('min-price') and request.GET.get('max-price'):
+			items = items.filter(price__gte=min_price, price__lte=max_price)
 
-	context['items'] = paginated_items
+		# Update the pagination after applying filters
+		paginator = Paginator(items, 12)
+		page = request.GET.get(page_request_var)
+		try:
+			paginated_queryset = paginator.page(page)
+		except PageNotAnInteger:
+			paginated_queryset = paginator.page(1)
+		except EmptyPage:
+			paginated_queryset = paginator.page(paginator.num_pages)
+
+	context['items'] = paginated_queryset
 	return render(request, 'app/store.html', context)
+
 
 
 @login_required(login_url="/login")
