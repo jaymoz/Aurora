@@ -41,9 +41,11 @@ class OrderAdmin(admin.ModelAdmin):
                     'id',
                     'ordered',
                     'status',
+                    'phone',
                     'house_address',
                     'city',
-                    'phone',
+                    'postal_code',
+                    'country',
                     'ordered_date'
 
  

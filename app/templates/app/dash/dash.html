@@ -47,7 +47,12 @@
                 <span>Change password</span>
               </a>
             </li>
-
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}">
+              <i class="bi bi-box-arrow-left"></i>
+              <span>Sign out</span>
+            </a>
+          </li>
 
           </ul><!-- End Profile Dropdown Items -->
         </li><!-- End Profile Nav -->
@@ -83,7 +88,7 @@
               <div class="card recent-sales overflow-auto">
 
                 <div class="card-body">
-                  <h5 class="card-title">Recent order <span>| 5</span></h5>
+                  <h5 class="card-title">My orders <span>({{ recent_orders | length }})</span></h5>
 
                   <table class="table table-borderless datatable">
                     <thead>
@@ -100,7 +105,7 @@
                       <tr>
                         <th scope="row"><a href="#">#{{order.id}}</a></th>
                         <td>{{order.user.username}}</td>
-                        <td><a href="#" class="text-primary">{{order.ref_code}}</a></td>
+                        <td><a href="{% url 'order-detail' order.id %}" class="text-primary">{{order.ref_code}}</a></td>
                         <td>${{order.get_total}}</td>
                         {% if order.get_status_display == "On delivery" %}
                         <td><span class="badge bg-info">On delivery</span></td>

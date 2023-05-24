@@ -14,7 +14,6 @@ urlpatterns = [
 	path('add-to-cart/<slug>/',views.add_to_cart, name='add'),
     path('remove-from-cart-page/<slug>/',views.remove_from_cart_page, name='remove-from-cart-page'),
     path('dashboard/', views.dashboard, name="dashboard"),
-    path("my-orders/", views.my_orders, name="my_orders"),
     path('item-detail/<str:pk>/', views.item_detail, name='item-detail'),
     path('wishlist/', views.wishlist, name="wishlist"),
     path('add-to-wishlist/<slug>/', views.add_to_wishlist, name='add-to-wishlist'),
@@ -29,4 +28,5 @@ urlpatterns = [
     path("password_reset/", views.password_reset_request, name="password_reset"),
     path('item-detail-add-to-cart/<slug>/',views.add_to_cart_item_detail_page, name='add-item-detail'),
 	path('item-detail-remove-from-cart/<slug>/',views.remove_from_cart_item_detail_page, name='remove-item-detail'),
+    path('order-detail/<str:pk>/', views.orderDetail, name='order-detail')
 ]

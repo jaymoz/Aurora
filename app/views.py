@@ -511,26 +511,16 @@ def remove_from_cart_item_detail_page(request, slug):
 
 @login_required(login_url="/login")
 def dashboard(request):
-	recent_orders = Order.objects.filter(user=request.user, ordered=True).order_by('-ordered_date')[0:6]
+	recent_orders = Order.objects.filter(user=request.user, ordered=True).order_by('-ordered_date')
 	most_popular_items = get_popular_items()
 	context = {'recent_orders':recent_orders, 'most_popular_items' : most_popular_items}
 	return render(request, "app/dash/dash.html", context)
 
-
 @login_required(login_url="/login")
-def my_orders(request):
-	orders = Order.objects.filter(ordered=True, user=request.user)
-	sales = Order.objects.filter(status="delivered").count()
-	orders_delivered = Order.objects.filter(status="delivered")
-	my_order = True
-	customers = User.objects.count()
-	revenue = 0
-	for order in orders_delivered:
-		revenue += order.get_total()
-	context = {'orders':orders, 'orders_delivered':orders_delivered, 'sales':sales, 'revenue':revenue,
-		 'customers':customers, 'my_order':my_order}
-	return render(request, "app/dash/all-orders.html", context)
-
+def orderDetail(request, pk):
+	order = get_object_or_404(Order, id=pk)
+	context = {'order':order}
+	return render(request, "app/dash/order-detail.html", context)
 
 def item_detail(request, pk):
 	item = get_object_or_404(Item,id=pk)
